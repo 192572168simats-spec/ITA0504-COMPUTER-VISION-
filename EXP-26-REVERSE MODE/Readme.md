@@ -1,39 +1,36 @@
 import cv2
+import matplotlib.pyplot as plt
 
-def reverse_video(input_video_path, output_video_path):
-    # Open the video file
-    cap = cv2.VideoCapture(input_video_path)
-    if not cap.isOpened():
-        print(f"Error: Could not open input video {input_video_path}")
-        return
+# Load the original image
+img = cv2.imread('/content/images.jpg')
 
-    # Get video properties
-    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fps = int(cap.get(cv2.CAP_PROP_FPS))
+if img is not None:
+    # Define the target resolution (width, height)
+    target_width = 300
+    target_height = 300
+    target_dim = (target_width, target_height)
     
-    # Define video writer
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v") # Codec for MP4
-    out = cv2.VideoWriter(output_video_path, fourcc, fps, (frame_width, frame_height))
+    # Resize the image using bilinear interpolation (standard for resizing)
+    resized_img = cv2.resize(img, target_dim, interpolation=cv2.INTER_LINEAR)
     
-    frames = []
-    # Read all frames
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
-        frames.append(frame)
-    cap.release()
+    # Convert color spaces from BGR to RGB for correct display in matplotlib
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    resized_rgb = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
     
-    # Reverse frames
-    frames.reverse()
+    # Display both images side-by-side
+    fig, axes = plt.subplots(1, 2, figsize=(12, 6))
     
-    # Write frames in reverse order
-    for frame in frames:
-        out.write(frame)
-    out.release()
-    print(f"Reversed video saved as: {output_video_path}")
-
-# Example usage:
-# Ensure you have an 'input_video.mp4' in your workspace before running this line.
-# reverse_video("input_video.mp4", "output_reversed.mp4")
+    # Original Image
+    axes[0].imshow(img_rgb)
+    axes[0].set_title(f"Original Image\nResolution: {img.shape[1]}x{img.shape[0]}")
+    axes[0].axis('off')
+    
+    # Resized Image
+    axes[1].imshow(resized_rgb)
+    axes[1].set_title(f"Resized Image\nResolution: {target_width}x{target_height}")
+    axes[1].axis('off')
+    
+    plt.tight_layout()
+    plt.show()
+else:
+    print("Could not load the image. Please verify the file path.")
