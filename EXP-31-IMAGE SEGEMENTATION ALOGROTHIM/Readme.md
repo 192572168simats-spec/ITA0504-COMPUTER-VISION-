@@ -1,19 +1,20 @@
 import cv2
-from google.colab.patches import cv2_imshow
+from PIL import Image
+from IPython.display import display
+import os
 
-def segment_image(image_path, threshold_value=127):
-    # Read the input image
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE) # Convert to grayscale
-    if image is None:
-        print(f"Error: Could not read image at {image_path}")
-        return
-    # Apply thresholding for segmentation
-    _, segmented_image = cv2.threshold(image, threshold_value, 255, cv2.THRESH_BINARY)
-    # Display the results in Colab
-    print("Original Image:")
-    cv2_imshow(image)
-    print("Segmented Image:")
-    cv2_imshow(segmented_image)
+input_path = "/mnt/data/images.jpg"
+image = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
 
-# Example usage with selected file
-segment_image("/content/images.jpg", 127)
+if image is None:
+    raise FileNotFoundError(f"Could not read image: {input_path}")
+
+threshold_value = 127
+_, segmented_image = cv2.threshold(image, threshold_value, 255, cv2.THRESH_BINARY)
+
+output_path = "/mnt/data/segmented_image.png"
+cv2.imwrite(output_path, segmented_image)
+
+print("Threshold segmentation completed.")
+print(f"Threshold value: {threshold_value}")
+display(Image.open(output_path))
