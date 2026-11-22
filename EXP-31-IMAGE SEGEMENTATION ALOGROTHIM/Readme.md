@@ -1,19 +1,19 @@
 import cv2
 from google.colab.patches import cv2_imshow
 
-def detect_faces(image_path):
-    # Load pre-trained Haar cascade for face detection
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    # Read the image
-    image = cv2.imread(image_path)
+def segment_image(image_path, threshold_value=127):
+    # Read the input image
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE) # Convert to grayscale
     if image is None:
         print(f"Error: Could not read image at {image_path}")
         return
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # Convert to grayscale
-    # Detect faces
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-    # Draw bounding boxes around faces
-    for (x, y, w, h) in faces:
-        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-    # Display the result in Colab
+    # Apply thresholding for segmentation
+    _, segmented_image = cv2.threshold(image, threshold_value, 255, cv2.THRESH_BINARY)
+    # Display the results in Colab
+    print("Original Image:")
     cv2_imshow(image)
+    print("Segmented Image:")
+    cv2_imshow(segmented_image)
+
+# Example usage with selected file
+segment_image("/content/images.jpg", 127)
